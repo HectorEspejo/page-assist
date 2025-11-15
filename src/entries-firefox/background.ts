@@ -118,6 +118,19 @@ export default defineBackground({
         const data = await getInitialConfig()
         contextMenuClick = data.contextMenuClick
         actionIconClick = data.actionIconClick
+
+        // Remove existing menu items to avoid duplicate ID errors
+        try {
+          await browser.contextMenus.remove(contextMenuId.webui)
+        } catch (e) {
+          // Menu might not exist, ignore
+        }
+        try {
+          await browser.contextMenus.remove(contextMenuId.sidePanel)
+        } catch (e) {
+          // Menu might not exist, ignore
+        }
+
         browser.contextMenus.create({
           id: contextMenuId[contextMenuClick],
           title: contextMenuTitle[contextMenuClick],

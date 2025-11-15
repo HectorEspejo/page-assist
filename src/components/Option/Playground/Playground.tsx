@@ -2,6 +2,7 @@ import React from "react"
 import { PlaygroundForm } from "./PlaygroundForm"
 import { PlaygroundChat } from "./PlaygroundChat"
 import { useMessageOption } from "@/hooks/useMessageOption"
+import { useChatUrlState } from "@/hooks/useChatUrlState"
 import { webUIResumeLastChat } from "@/services/app"
 import {
   formatToChatHistory,
@@ -16,6 +17,9 @@ import { useStorage } from "@plasmohq/storage/hook"
 import { Storage } from "@plasmohq/storage"
 import { otherUnsupportedTypes } from "../Knowledge/utils/unsupported-types"
 export const Playground = () => {
+  // Initialize URL state synchronization for chat sessions
+  useChatUrlState()
+
   const drop = React.useRef<HTMLDivElement>(null)
   const [dropedFile, setDropedFile] = React.useState<File | undefined>()
   const [defaultWebUIPrompt] = useStorage("defaultWebUIPrompt", undefined)
@@ -30,6 +34,7 @@ export const Playground = () => {
   const {
     selectedKnowledge,
     messages,
+    historyId,
     setHistoryId,
     setHistory,
     setMessages,
@@ -112,6 +117,11 @@ export const Playground = () => {
   }, [selectedKnowledge])
 
   const setRecentMessagesOnLoad = async () => {
+    // Skip auto-resume if chat was loaded from URL
+    if (historyId) {
+      return
+    }
+
     const isEnabled = await webUIResumeLastChat()
     if (!isEnabled) {
       return

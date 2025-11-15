@@ -432,7 +432,7 @@ export const Sidebar = ({
                           setContext(session)
                         }
                         updatePageTitle(chat.title)
-                        navigate("/")
+                        navigate("/?chat=" + chat.id)
                         onClose()
                       }}>
                       <span className="flex-grow truncate">{chat.title}</span>
